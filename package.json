@@ -1,0 +1,38 @@
+{
+  "name": "symptom.diary",
+  "version": "1.0.0",
+  "description": "Improve your treatment -- AWS-IoT-powered symptom diary. ",
+  "main": "index.js",
+  "dependencies": {
+    "aws-iot-device-sdk": "^1.0.14",
+    "express": "^4.15.3",
+    "socket.io": "^2.0.3"
+  },
+  "devDependencies": {
+    "eslint": "^4.0.0"
+  },
+  "scripts": {
+    "postinstall": "npm start",
+    "start": "nodemon index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/janmattfeld/symptom.diary.git"
+  },
+  "keywords": [
+    "AWS",
+    "IoT",
+    "Alexa",
+    "Amazon",
+    "Dash",
+    "Cancer",
+    "Treatment",
+    "Diary"
+  ],
+  "author": "Jan Mattfeld",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/janmattfeld/symptom.diary/issues"
+  },
+  "homepage": "https://github.com/janmattfeld/symptom.diary#readme"
+}
