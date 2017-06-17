@@ -25,7 +25,7 @@ device
 const app = express();
 app.use(express.static('dash'));
 app.use('/node_modules', express.static('./node_modules'))
-app.listen(8080);
+app.listen(443);
 
 /**
  * Start WebSocket on Port 3000 and forward IoT Messages
