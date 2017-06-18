@@ -32,11 +32,18 @@ app.listen(8080);
  */
 io.on('connection', function (socket) {
 
+  // AWS device
   device
     .on('message', function (topic, payload) {
       console.log('message', topic, payload.toString());
       socket.emit('event', payload.toString());
     });
+
+  // Other devices
+  socket.on('event', function (data) {
+      console.log('message', data.toString());
+      socket.emit('event', data);
+  });
 
 });
 io.listen(3000);

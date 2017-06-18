@@ -1,13 +1,270 @@
-<script src="../node_modules/socket.io-client/dist/socket.io.js"></script>
-<script>
-  var socket = io('http://localhost:3000');
-  socket.on('connect', function(){
-      console.log('Connected to IoT Server')
-  });
-  socket.on('event', function(data){
-      console.log(JSON.parse(data));
-  });
-  socket.on('disconnect', function(){
-      console.log('Connection lost');
-  });
-</script>
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0, user-scalable=no" />
+    <title>Symptom.diary | AWS-IoT-powered symptom diary.</title>
+
+    <!-- CSS  -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href="../node_modules/materialize-css/dist/css/materialize.css" type="text/css" rel="stylesheet" media="screen,projection"
+    />
+    <link href="./css/style.css" type="text/css" rel="stylesheet" media="screen,projection" />
+
+    <link href="../node_modules/chartist/dist/chartist.css" type="text/css" rel="stylesheet" media="screen,projection" />
+
+    <link rel="icon" href="images/open_lock.png">
+</head>
+
+<body>
+
+    <header>
+        <div class="navbar-fixed">
+            <nav class="primary-color" role="navigation">
+                <div class="nav-wrapper container">
+                    <a class="brand-logo" href="#!"><i class="material-icons">lock_open</i>Symptom.diary</a>
+                    <a href="#" data-activates="nav-mobile" class="button-collapse right"><i
+                        class="material-icons">menu</i></a>
+
+                    <ul class="right hide-on-med-and-down">
+                        <li>
+                            <a class="waves-effect waves-light btn"><i class="material-icons left">cloud</i>Cloud</a></li>
+                        <li><a class="modal-trigger valign-wrapper" href="#signout-modal">Jonas Pohlmann
+                        <img class="circle" src="./images/profile.jpg" alt="Jonas Pohlmann"></a>
+                        </li>
+                    </ul>
+
+                    <ul id="nav-mobile" class="right side-nav">
+                        <li class="active valign-wrapper"><a class="modal-trigger" href="#signout-modal">Sign out</a></li>
+                    </ul>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+
+        <div class="container">
+
+            <div class="section">
+
+                <div class="row">
+
+                    <!-- Stats -->
+                    <div class="col s12 m12 l6">
+                        <div class="card small">
+                            <div class="card-image">
+                                <img src="./images/office.jpg">
+                                <span class="card-title ">Connected Devices</span>
+                            </div>
+                            <div class="card-content">
+
+                                <div class="row valign-wrapper">
+                                    <div class="col s2">
+                                        <i class="material-icons circle ">blur_circular</i>
+                                        <!-- notice the "circle" class -->
+                                    </div>
+                                    <div class="col s10">
+                                        <span class="black-text">
+                                            Amazon Alexa
+                                        </span>
+                                    </div>
+                                    <div class="col s2">
+                                        <i class="material-icons circle ">smartphone</i>
+                                        <!-- notice the "circle" class -->
+                                    </div>
+                                    <div class="col s10">
+                                        <span class="black-text">
+                                            iOS Companion App
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <div class="row valign-wrapper">
+                                    <div class="col s2">
+                                        <i class="material-icons circle ">play_circle_outline</i>
+                                        <!-- notice the "circle" class -->
+                                    </div>
+                                    <div class="col s10">
+                                        <span class="black-text">
+                                            Amazon Dash Button
+                                        </span>
+                                    </div>
+                                    <div class="col s2">
+                                        <i class="material-icons circle ">watch</i>
+                                        <!-- notice the "circle" class -->
+                                    </div>
+                                    <div class="col s10">
+                                        <span class="black-text">
+                                            Fitbit Tracker
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Graph -->
+                    <div class="col s12 m12 l6">
+
+                        <div class="card small">
+
+                            <div class="card-content">
+                                <span class="card-title truncate">Incidents<i class="material-icons right" onclick="refreshTransactions()">refresh</i><i class="material-icons right" onclick="refreshTransactions(10)">more_vert</i></span>
+
+                                <table id="incidents">
+                                    <thead>
+                                        <tr>
+                                            <th data-field="name">Source</th>
+                                            <th data-field="id">Severity</th>
+                                            <th data-field="id">Symptom</th>
+                                            <th data-field="price">Device</th>
+                                            <th data-field="id">Date</th>
+                                            <th data-field="id">Time</th>
+                                        </tr>
+                                    </thead>
+
+                                    <tbody>
+
+                                        <tr>
+                                            <td><i class="material-icons circle">smartphone</i></td>
+                                            <td><i class="material-icons circle">local_florist</i></td>
+                                            <td>Headache</td>
+                                            <td>iOS Companion App</td>
+                                            <td>18.6.2017</td>
+                                            <td>11:30</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                    </div>
+
+
+                    <!-- Chart -->
+                    <div class="col  s12 m12 l6">
+                        <div class="card">
+                            <div class="card-content">
+                                <div id="myChart" class="ct-chart"></div>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <div class="col s12 m12 l6">
+
+                        <div class="card">
+
+                            <div class="card-content">
+                                <span class="card-title truncate">Medication<i class="material-icons right" onclick="refreshTransactions()">refresh</i><i class="material-icons right" onclick="refreshTransactions(10)">more_vert</i></span>
+
+                                <table id="medication">
+                                    <thead>
+                                        <tr>
+                                            <th data-field="name">Source</th>
+                                            <th data-field="id">Type</th>
+                                            <th data-field="id">Medication</th>
+                                            <th data-field="price">Device</th>
+                                            <th data-field="id">Date</th>
+                                            <th data-field="id">Time</th>
+                                        </tr>
+                                    </thead>
+
+                                    <tbody>
+
+                                        <tr>
+                                            <td><i class="material-icons circle">blur_circular</i></td>
+                                            <td><i class="material-icons circle">face</i></td>
+                                            <td>Afatinib Dimaleate</td>
+                                            <td>Amazon Alexa</td>
+                                            <td>18.6.2017</td>
+                                            <td>11:45</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+
+            </div>
+
+        </div>
+    </main>
+
+    <footer class="page-footer primary-color">
+        <div class="container">
+            <div class="row">
+                <div class="col s12 l6">
+                    <h5 class="white-text">Symptom.diary</h5>
+                    <p class="grey-text text-lighten-4">
+                        Symptom.diary is a unique improvement for treatment of severe diseases. Bring facts to your doctors appointsments and log
+                        your symptoms by a button press or just talk to Alexa. We leverage the AWS IoT infrastructure to
+                        provide you with a secure and reliable service.
+                    </p>
+                </div>
+                <div class="col s12 l3">
+                    <h5 class="white-text">Links</h5>
+                    <ul>
+                        <li><a class="accent-color-text" href="dashboard.html">Dashboard</a></li>
+                        <li><a class="accent-color-text" href="https://github.com/janmattfeld/symptom.diary">Git</a></li>
+                        <li><a class="accent-color-text" href="#">Slack</a></li>
+                    </ul>
+                </div>
+                <div id="footer-contact" class="col s12 m12 l3">
+                    <h5 class="white-text">Contact</h5>
+                    <ul>
+                        <li class="white-text">Symptom.diary</li>
+                        <li class="white-text">Friedrich-Ebert-Allee 114-126</li>
+                        <li class="white-text">53113 Bonn, Germany</li>
+                        <li class="valign-wrapper">
+                            <i class="material-icons accent-color-text valign tiny">email</i>
+                            <a class="accent-color-text" href="mailto:kontakt@symptom.diary">E-mail</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="footer-copyright">
+            <div class="container">
+                © 2017 Symptom.diary | by
+                <a class="accent-color-text" href="mailto:jan.mattfeld@student.hpi.de">Jan</a>,
+                <a class="accent-color-text" href="mailto:jonas.pohlmann@student.hpi.de">Jonas</a> and
+                <a class="accent-color-text" href="mailto:markus.petrykowski@student.hpi.de">Markus</a>.
+            </div>
+        </div>
+    </footer>
+
+    <!-- Login Modal -->
+    <div id="signout-modal" class="modal">
+        <div class="modal-content">
+            <h4 class="primary-color-text">Sign out</h4>
+            <div class="row">
+                <div class="modal-footer col s12">
+                    <a href="#!" class=" modal-action modal-close waves-effect waves-green primary-color btn left">Cancel</a>
+                    <a href="index.html" class=" modal-action modal-close waves-effect waves-green primary-color btn">
+                    Sign out!</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!--  Scripts-->
+    <script src="../node_modules/jquery/dist/jquery.js"></script>
+    <script src="../node_modules/materialize-css/dist/js/materialize.js"></script>
+    <script src="../node_modules/chartist/dist/chartist.js"></script>
+
+    <script src="../node_modules/socket.io-client/dist/socket.io.js"></script>
+    <script src="./js/socket.js"></script>
+    <script src="./js/chart.js"></script>
+
+</body>
+
+</html>
