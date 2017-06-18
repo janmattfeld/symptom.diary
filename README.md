@@ -2,7 +2,9 @@
 
 > Improve your Treatment by the Push of a Button!
 
-Bring facts to your doctors appointments and log symptoms by
+![Dashboard](./media/dash.png)
+
+### Bring facts to your doctors appointments and log symptoms by
 
 - pressing a specific `Dash Button`
 - talking to `Alexa`
@@ -21,9 +23,9 @@ All data is stored securely. If you wish, you may share it within the `Gesundhei
 
 ## How we built it
 
-We leverage the AWS IoT infrastructure to connect you with a secure and reliable service.
+We leverage the AWS IoT infrastructure to connect your devices securely and reliable.
 
-We built also built on node.js, socket.io, AWS Lambda and React Native.
+We also built on node.js, socket.io, AWS Lambda and React Native.
 
 ## Installation
 
