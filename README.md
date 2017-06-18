@@ -4,6 +4,10 @@
 
 ![Dashboard](./media/dash.png)
 
+### App
+Allows easy tracking of Adverse Reactions and giving an overview of them afterwards.
+![App-Workflow](./media/app-workflow.gif)
+
 ### Bring facts to your doctors appointments and log symptoms by
 
 - pressing a specific `Dash Button`
